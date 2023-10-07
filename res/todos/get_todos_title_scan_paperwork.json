@@ -1,0 +1,20 @@
+{
+    "todos": [
+        {
+            "id": "1",
+            "title": "scan paperwork",
+            "doneStatus": "false",
+            "description": "",
+            "tasksof": [
+                {
+                    "id": "1"
+                }
+            ],
+            "categories": [
+                {
+                    "id": "1"
+                }
+            ]
+        }
+    ]
+}
