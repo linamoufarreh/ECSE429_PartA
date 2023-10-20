@@ -34,6 +34,37 @@ describe('interperability', () => {
         expect(response.status).toBe(200);
         expect(response.data).toBeDefined();
     });
+
+    test('should get relationship between todo with id 1 and all categories', async () => {
+        const response = await axios.get(apiUrl + "/todos/1/categories");
+        const expected = require('./res/interoperability/categoryTodo.json')
+
+        expect(response.status).toBe(200);
+        expect(response.data).toBeDefined();
+        expect(response.data).toEqual(expected);
+
+    });
+
+    test('should post relationship between category with id 2 and todo with id 1', async () => {
+
+        const body = 
+        {
+            "id": "2"
+        }
+
+        const response = await axios.post(apiUrl + "/todos/1/categories", body);
+        expect(response.status).toBe(201);
+
+    });
+
+    test('should delete relationship between category with id 2 and todo with id 1', async () => {
+
+        const response = await axios.delete(apiUrl + "/todos/1/categories/2");
+        expect(response.status).toBe(200);
+
+    });
+
+
 });
 
 
