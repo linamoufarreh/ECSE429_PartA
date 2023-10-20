@@ -11,18 +11,21 @@ function startApi() {
     exec('java -jar runTodoManagerRestAPI-1.5.5.jar');
 }
 
-function stopApi() {
-    axios.get(apiUrl + "/shutdown");
+async function stopApi() {
+    try{
+        const response = await axios.get(apiUrl + "/shutdown");
+    } catch (error) {
+    }
 }
 
-describe('test todos', () => {
+describe('todos', () => {
 
     beforeAll(async () => {
         startApi();
         //wait 2 seconds for the server to start
         await new Promise(resolve => setTimeout(resolve, 2000));
     }, 10000);
-
+    
     afterAll(async () => {
     try {
         stopApi();
@@ -31,6 +34,8 @@ describe('test todos', () => {
     } catch (error) {
     }
     }, 10000);
+
+    //add tests here
 
     test('should return data from API', async () => {
         const response = await axios.get(apiUrl);
@@ -278,3 +283,28 @@ describe('test todos', () => {
         });
     });
 });
+
+// describe('test projects', () => {
+
+//     beforeAll(async () => {
+//         startApi();
+//         //wait 2 seconds for the server to start
+//         await new Promise(resolve => setTimeout(resolve, 2000));
+//     }, 10000);
+    
+//     afterAll(async () => {
+//     try {
+//         stopApi();
+//         //wait 2 seconds for the server to stop
+//         await new Promise(resolve => setTimeout(resolve, 2000));
+//     } catch (error) {
+//     }
+//     }, 10000);
+
+//     //Add tests here
+//     test('should return data from API', async () => {
+//         const response = await axios.get(apiUrl);
+//         expect(response.status).toBe(200);
+//         expect(response.data).toBeDefined();
+//     });
+// });
