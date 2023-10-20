@@ -4,15 +4,18 @@
   "description": "",
   "main": "todoAppUnitTest.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --forceExit"
   },
   "jest": {
-    "setupFilesAfterEnv": ["jest-extended/all"]
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "await-exec": "^0.1.2",
     "axios": "^1.5.1"
   },
   "devDependencies": {
