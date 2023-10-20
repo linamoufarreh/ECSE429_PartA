@@ -1,0 +1,14 @@
+{
+    "categories": [
+        {
+            "id": "2",
+            "title": "Home",
+            "description": ""
+        },
+        {
+            "id": "1",
+            "title": "Office",
+            "description": ""
+        }
+    ]
+}
