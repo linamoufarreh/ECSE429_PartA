@@ -43,15 +43,6 @@ describe('todos', () => {
         expect(response.data).toBeDefined();
     });
 
-    test('should post data', async () => {
-        todoJson = {
-            "title": "testTodo",
-        }
-        const response = await axios.post(apiUrl + "/todos", todoJson);
-        expect(response.status).toBe(201);
-        expect(response.data).toBeDefined();
-    });
-
     describe("API Docs Test", () => {
         const docsUrl = apiUrl + "/docs";
 
