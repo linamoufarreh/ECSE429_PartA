@@ -4,15 +4,22 @@
   "description": "",
   "main": "todoAppUnitTest.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "jest-extended/all"
+    ]
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "await-exec": "^0.1.2",
     "axios": "^1.5.1"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "jest-extended": "^4.0.1"
   }
 }
