@@ -72,7 +72,24 @@ describe('interperability', () => {
             expect(error.response.status).toBe(404);
             return;
         }
-        fail("Should not have reached here");
+        fail("Should have returned error code 404");
+
+    });
+
+    test('should return error when trying to link nonexistent category to a todo', async () => {
+
+        const body = 
+        {
+            "id": "2345"
+        }
+
+        try{
+            const response = await axios.post(apiUrl + "/todos/1/categories", body);
+        } catch (error) {
+            expect(error.response.status).toBe(404);
+            return;
+        }
+        fail("Should have returned error code 404");
 
     });
 
@@ -83,6 +100,39 @@ describe('interperability', () => {
         expect(response.status).toBe(404);
         expect(response.data).toBeUndefined();
 
+    });
+
+    test('should return error with malformed json payload', async () => {
+
+        const malformedJson = '{"id": "2}'
+
+        try{
+            const response = await axios.post(apiUrl + "/todos/1/categories", malformedJson,{
+                headers: {
+                  'Content-Type': 'application/json',
+                }});
+
+        } catch (error) {
+            expect(error.response.status).toBe(400);
+            return;
+        }
+    });
+
+    test('should return error with malformed xml payload', async () => {
+
+        //malformed xml
+        const malformedXml = '<id>2'
+
+        try{
+            const response = await axios.post(apiUrl + "/todos/1/categories", malformedXml,{
+                headers: {
+                  'Content-Type': 'application/xml',
+                }});
+                
+        } catch (error) {
+            expect(error.response.status).toBe(400);
+            return;
+        }
     });
 
 
