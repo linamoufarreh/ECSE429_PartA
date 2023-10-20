@@ -162,8 +162,6 @@ describe('todos', () => {
             expect(response.data.description).toEqual(expected.description);
             expect(response.data.doneStatus).toEqual(expected.doneStatus);
 
-            console.log("ID created: " + response.data.id);
-
             newTodoId = response.data.id;
         });
 
