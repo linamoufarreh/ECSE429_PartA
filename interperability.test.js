@@ -45,7 +45,7 @@ describe('interperability', () => {
 
     });
 
-    test('should post relationship between category with id 2 and todo with id 1', async () => {
+    test('should post relationship between category with id 2 and todo with id 1, todo->categories', async () => {
 
         const body = 
         {
@@ -63,6 +63,29 @@ describe('interperability', () => {
         expect(response.status).toBe(200);
 
     });
+
+    test('should not be able to delete nonexistant relationship between category with id 2 and todo with id 1', async () => {
+
+        try{
+            const response = await axios.delete(apiUrl + "/todos/1/categories/2");
+        } catch (error) {
+            expect(error.response.status).toBe(404);
+            return;
+        }
+        fail("Should not have reached here");
+
+    });
+
+    test('[BUG] should return error code 404 when we get relationship between todo with unexistant id and all categories', async () => {
+        const response = await axios.get(apiUrl + "/todos/3433/categories");
+        const expected = require('./res/interoperability/categoryTodo.json')
+
+        expect(response.status).toBe(404);
+        expect(response.data).toBeUndefined();
+
+    });
+
+
 
 
 });
