@@ -35,5 +35,3 @@ describe('test projects', () => {
         expect(response.data).toBeDefined();
     });
 });
-
-

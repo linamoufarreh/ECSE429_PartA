@@ -41,7 +41,7 @@ describe('interperability', () => {
 
         expect(response.status).toBe(200);
         expect(response.data).toBeDefined();
-        expect(response.data).toEqual(expected)
+        expect(response.data).toEqual(expected);
 
     });
 
@@ -49,7 +49,7 @@ describe('interperability', () => {
 
         const body = 
         {
-            "id": 2
+            "id": "2"
         }
 
         const response = await axios.post(apiUrl + "/todos/1/categories", body);
