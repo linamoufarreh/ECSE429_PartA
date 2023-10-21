@@ -1,5 +1,11 @@
 # ECSE429_PartA
 
+Written Report:
+https://docs.google.com/document/d/1OkpahBhuXRNjYeRRbY61wVqjs0nYHGOVTpSBRriO1Q4/edit?usp=sharing
+
+Video:
+[Add link here]
+
 Charter:
 https://docs.google.com/document/d/1rxfjzJuR5SpGvfy3L_Dmy07gFtXhp-b7J7CMqgd479Q/edit?usp=sharing
 
