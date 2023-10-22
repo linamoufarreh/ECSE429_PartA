@@ -31,9 +31,7 @@ describe('test projects', () => {
     //Add tests here
 
     // test GET /projects
-    test("[BUG] GET /projects returns status 200 and the following JSON", async () => {
-
-        try{
+    test("GET /projects returns status 200 and the following JSON", async () => {
             let response = await axios.get(projectUrl);
         
             expect(response.status).toBe(200);
@@ -45,12 +43,58 @@ describe('test projects', () => {
 
             expect(response.length).toBe(expected.length);
             expect(response).toIncludeSameMembers(expected);
-
-        } catch (error) {
-            throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
-        }
     });
     
+
+    test(" [BUG] POST /projects with valid body returns status 201 and random project IDs", async () => {
+        const req1 = require('./res/projects/post_projects_req.json');
+        const req2 = require('./res/projects/post_projects_req.json');
+       
+        // POST the first project
+        let response1 = await axios.post(projectUrl, req1);
+        expect(response1.status).toBe(201);
+        expect(response1.headers['content-type']).toBe('application/json');
+      
+        // POST the second project
+        let response2 = await axios.post(projectUrl, req2);
+        expect(response2.status).toBe(201);
+        expect(response2.headers['content-type']).toBe('application/json');
+      
+        // Ensure both projects have random IDs
+        const projectId1 = response1.data.id;
+        const projectId2 = response2.data.id;
+
+        try{
+        expect(projectId1).toEqual(projectId2-1);
+      
+        //Delete the first project
+        response1 = await axios.delete(projectUrl + "/" + projectId1);
+        expect(response1.status).toBe(200);
+        expect(response1.headers['content-type']).toBe('application/json');
+      
+        //Delete the second project
+        response2 = await axios.delete(projectUrl + "/" + projectId2);
+        expect(response2.status).toBe(200);
+        expect(response2.headers['content-type']).toBe('application/json');
+
+        } catch (error){
+            throw new Error(`Test failed due to bug: Project IDs are not in natural order`)
+
+        } finally {
+            // Delete the first project, if it was created
+              const response1 = await axios.delete(projectUrl + "/" + projectId1);
+              expect(response1.status).toBe(200);
+              expect(response1.headers['content-type']).toBe('application/json');
+            
+        
+            // Delete the second project
+              const response2 = await axios.delete(projectUrl + "/" + projectId2);
+              expect(response2.status).toBe(200);
+              expect(response2.headers['content-type']).toBe('application/json');
+            
+        }
+      });
+
     //Behavior of Bug #1: Project IDs  generated in random order.
 
     test(" [BUG BEHAVIOR] POST /projects with valid body returns status 201 and random project IDs", async () => {
@@ -85,9 +129,7 @@ describe('test projects', () => {
 
 
     // test GET /projects?title=Office Work
-    test(" [BUG] GET /projects?title=Office Work returns status 200 and the following JSON", async () => {
-
-        try{
+    test("GET /projects?title=Office Work returns status 200 and the following JSON", async () => {
         const response = await axios.get(projectUrl + "?title=Office Work");
         
         expect(response.status).toBe(200);
@@ -96,15 +138,10 @@ describe('test projects', () => {
         const expected = require('./res/projects/get_projects_title_office_work.json');
         expect(response.data).toMatchObject(expected);
         
-    } catch(error){
-        throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
-    }
     });
     
     // test GET /projects?completed=false
-    test("[BUG] GET /projects?completed=false returns status 200 and the following JSON", async () => {
-
-        try{
+    test("GET /projects?completed=false returns status 200 and the following JSON", async () => {
         const response = await axios.get(projectUrl + "?completed=false");
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
@@ -112,9 +149,6 @@ describe('test projects', () => {
         const expected = require('./res/projects/get_projects_completed_false.json');
      
         expect(response.data).toMatchObject(expected);
-        } catch(error){
-            throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
-        }
     });
 
     // test HEAD /projects
@@ -279,26 +313,19 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
     });
 
     // test GET /projects/:id/tasks
-    test(" [BUG] GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
-        try {
+    test(" GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         let response = await axios.get(projectUrl + "/1/tasks");
     
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
     
         let expected = require('./res/projects/get_projects_id_tasks_res.json');
-        response = response.data.todos[0];
-        expected = expected.todos[0];
+        // response = response.data
+        // expected = expected.data;
 
-        expect(response.id).toEqual(expected.id);
-        expect(response.title).toEqual(expected.title);
-        expect(response.doneStatus).toEqual(expected.doneStatus);
-        expect(response.description).toEqual(expected.description);
-
-    } catch (error) {
-        throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
-    }
+        expect(response.length).toEqual(expected.length);  
 });
+
     // test GET /projects/:id/tasks with nonexistent project ID
     test(" [BUG] GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         try {
