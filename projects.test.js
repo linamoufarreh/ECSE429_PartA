@@ -32,18 +32,26 @@ describe('test projects', () => {
 
     // test GET /projects
     test("GET /projects returns status 200 and the following JSON", async () => {
-            let response = await axios.get(projectUrl);
-        
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-        
-            let expected = require('./res/projects/get_projects.json');
-            response = response.data.projects;
-            expected = expected.projects;
-
-            expect(response.length).toBe(expected.length);
-            expect(response).toIncludeSameMembers(expected);
+        let response = await axios.get(projectUrl);
+    
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toBe('application/json');
+    
+        let expected = require('./res/projects/get_projects.json');
+        response = response.data.projects;
+        expected = expected.projects;
+    
+        // Sort the 'tasks' arrays by 'id'
+        response.forEach((project) => {
+        project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+        expected.forEach((project) => {
+        project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+    
+        expect(response).toEqual(expected);
     });
+  
     
 
     test(" [BUG] POST /projects with valid body returns status 201 and random project IDs", async () => {
@@ -136,7 +144,14 @@ describe('test projects', () => {
         expect(response.headers['content-type']).toBe('application/json');
 
         const expected = require('./res/projects/get_projects_title_office_work.json');
-        expect(response.data).toMatchObject(expected);
+        expected.projects.forEach((project) => {
+            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+        response.data.projects.forEach((project) => {
+            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+
+        expect(response.data).toEqual(expected);
         
     });
     
@@ -147,8 +162,14 @@ describe('test projects', () => {
         expect(response.headers['content-type']).toBe('application/json');
         
         const expected = require('./res/projects/get_projects_completed_false.json');
-     
-        expect(response.data).toMatchObject(expected);
+        expected.projects.forEach((project) => {
+            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+        response.data.projects.forEach((project) => {
+            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
+        });
+
+        expect(response.data).toEqual(expected);
     });
 
     // test HEAD /projects
