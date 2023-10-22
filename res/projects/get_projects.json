@@ -1,0 +1,19 @@
+{
+    "projects": [
+        {
+            "id": "1",
+            "title": "Office Work",
+            "completed": "false",
+            "active": "false",
+            "description":"",
+            "tasks": [
+                {
+                    "id": "1"
+                },
+                {
+                    "id": "2"
+                }
+            ]
+        }
+    ]
+}

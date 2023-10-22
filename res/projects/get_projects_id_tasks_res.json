@@ -1,0 +1,42 @@
+{
+    "todos": [
+        {
+            "id": "1",
+            "title": "scan paperwork",
+            "doneStatus": "false",
+            "description": "",
+            "categories": [
+                {
+                    "id": "1"
+                }
+            ],
+            "tasksof": [
+                {
+                    "id": "1",
+                    "title": "Office Work",
+                    "completed":"false",
+                    "active":"false",
+                    "description": ""
+                }
+            ]
+        },
+
+        {
+            "id": "2",
+            "title": "file paperwork",
+            "doneStatus": "false",
+            "description": "",
+            "categories": [],
+            "tasksof": [
+                {
+                    "id": "1",
+                    "title": "Office Work",
+                    "completed":"false",
+                    "active":"false",
+                    "description": ""
+                }
+            ]
+
+        }
+    ]
+}
