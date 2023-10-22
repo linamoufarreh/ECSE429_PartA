@@ -31,7 +31,7 @@ describe('test projects', () => {
     //Add tests here
 
     // test GET /projects
-    test("GET /projects returns status 200 and the following JSON", async () => {
+    test("[BUG] GET /projects returns status 200 and the following JSON", async () => {
 
         try{
             let response = await axios.get(projectUrl);
@@ -49,20 +49,43 @@ describe('test projects', () => {
         } catch (error) {
             throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
         }
-        // expected.projects.forEach((project) => {
-        //     project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        // });
-        // response.data.projects.forEach((project) => {
-        //     project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        // });
-    
-        // expect(response.data).toEqual(expected);
     });
     
-    
+    //Behavior of Bug #1: Project IDs  generated in random order.
+
+    test(" [BUG BEHAVIOR] POST /projects with valid body returns status 201 and random project IDs", async () => {
+        const req1 = require('./res/projects/post_projects_req.json');
+        const req2 = require('./res/projects/post_projects_req.json');
+      
+        // POST the first project
+        let response1 = await axios.post(projectUrl, req1);
+        expect(response1.status).toBe(201);
+        expect(response1.headers['content-type']).toBe('application/json');
+      
+        // POST the second project
+        let response2 = await axios.post(projectUrl, req2);
+        expect(response2.status).toBe(201);
+        expect(response2.headers['content-type']).toBe('application/json');
+      
+        // Ensure both projects have random IDs
+        const projectId1 = response1.data.id;
+        const projectId2 = response2.data.id;
+        expect(projectId1).not.toEqual(projectId2-1);
+      
+        //Delete the first project
+        response1 = await axios.delete(projectUrl + "/" + projectId1);
+        expect(response1.status).toBe(200);
+        expect(response1.headers['content-type']).toBe('application/json');
+      
+        //Delete the second project
+        response2 = await axios.delete(projectUrl + "/" + projectId2);
+        expect(response2.status).toBe(200);
+        expect(response2.headers['content-type']).toBe('application/json');
+      });
+
 
     // test GET /projects?title=Office Work
-    test("GET /projects?title=Office Work returns status 200 and the following JSON", async () => {
+    test(" [BUG] GET /projects?title=Office Work returns status 200 and the following JSON", async () => {
 
         try{
         const response = await axios.get(projectUrl + "?title=Office Work");
@@ -79,7 +102,7 @@ describe('test projects', () => {
     });
     
     // test GET /projects?completed=false
-    test("GET /projects?completed=false returns status 200 and the following JSON", async () => {
+    test("[BUG] GET /projects?completed=false returns status 200 and the following JSON", async () => {
 
         try{
         const response = await axios.get(projectUrl + "?completed=false");
@@ -127,29 +150,6 @@ describe('test projects', () => {
 
     });
 
-    // // test POST /projects with unique ID
-    // test("POST /projects with unique ID returns status 400 and an error message", async () => {
-    //     try {
-    //         const req = require('./res/projects/post_projects_unique_id_req.json');
-    //         await axios.post(projectUrl, req);
-
-    //         // Fail if the request succeeds
-    //         throw new Error('It should not reach here.');
-            
-    //     } catch (error) {
-    //         if (error.response === undefined) {
-    //             throw error;
-    //         }
-
-    //         const response = error.response;
-            
-    //         expect(response.status).toBe(400);
-    //         expect(response.headers['content-type']).toBe('application/json');
-
-    //         const expected = require('./res/projects/post_projects_existing_id_res.json');
-    //         expect(response.data).toMatchObject(expected);
-    //     }
-    // });
      
     
     // test POST /projects with valid body
@@ -279,7 +279,7 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
     });
 
     // test GET /projects/:id/tasks
-    test("GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
+    test(" [BUG] GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         try {
         let response = await axios.get(projectUrl + "/1/tasks");
     
@@ -299,8 +299,8 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
         throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
     }
 });
-    // test GET /projects/:id/tasks with inexistent ID
-    test("GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
+    // test GET /projects/:id/tasks with nonexistent project ID
+    test(" [BUG] GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         try {
         let response = await axios.get(projectUrl + "/20/tasks");
     
@@ -315,11 +315,26 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
         throw new Error(`Test failed due to bug: task objects are still received while project inexistent`)
     }
 });
+    //Behavior of Bug #2: Tasks of other projects received while Project ID nonexistent
+    test(" [BUG BEHAVIOR] GET /projects with tasks returns status 201 and GET project with invalid ID", async () => {
+        //GET tasks of a project with random ID
+        const invalidId = Math.floor(Math.random() * 10);
+        response =  await axios.get(projectUrl + "/" + invalidId+ '/tasks');
 
-    //test GET /projects/:id/categories with inexistent project ID
-    test("GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
+        if (invalidId!= 1){
+            expect(response.status).toBe(200);
+        }
+    });
+
+
+    //test GET /projects/:id/categories with nonexistent project ID
+    test(" [BUG] GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         try {
-        let response = await axios.get(projectUrl + "/14/categories");
+        const invalidId= Math.floor(Math.random() * 10);
+        if (invalidId.toEqual(1)){
+            invalidId= Math.floor(Math.random() * 10);
+        }
+        let response = await axios.get(projectUrl + "/" + invalidId+ "/categories");
 
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
@@ -331,6 +346,30 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
     } catch (error) {
         throw new Error(`Test failed due to bug: categories objects are still received while project inexistent`)
     }
+    });
+
+    //Behavior of Bug #3: Categories of other projects received while Project ID nonexistent
+    test(" [BUG BEHAVIOR] POST /projects with categories returns status 201 and GET project with invalid ID", async () => {
+        const req = require('./res/projects/post_projects_with_category.json');
+        let response = await axios.post(projectUrl, req);
+        expect(response.status).toBe(201);
+        expect(response.headers['content-type']).toBe('application/json');
+        const projectId = response.data.id;
+
+        //GET categories of a project with random ID
+
+        const invalidId = Math.floor(Math.random() * 10);
+        response =  await axios.get(projectUrl + "/" + invalidId+ '/categories');
+
+        if (invalidId!=projectId){
+            expect(response.status).toBe(200);
+        }
+
+        //DELETE project that was created
+        response = await axios.delete(projectUrl + "/" + projectId);
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toBe('application/json');
+
     });
 
 
