@@ -76,32 +76,22 @@ describe('test projects', () => {
     } catch(error){
         throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
     }
-        // const expected = require('./res/projects/get_projects_title_office_work.json');
-        // expected.projects.forEach((project) => {
-        //     project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        // });
-        // response.data.projects.forEach((project) => {
-        //     project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        // });
-    
-        // expect(response.data).toEqual(expected);
     });
     
     // test GET /projects?completed=false
     test("GET /projects?completed=false returns status 200 and the following JSON", async () => {
+
+        try{
         const response = await axios.get(projectUrl + "?completed=false");
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
         
         const expected = require('./res/projects/get_projects_completed_false.json');
-        expected.projects.forEach((project) => {
-            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        });
-        response.data.projects.forEach((project) => {
-            project.tasks = project.tasks.sort((a, b) => a.id.localeCompare(b.id));
-        });
-    
-        expect(response.data).toEqual(expected);
+     
+        expect(response.data).toMatchObject(expected);
+        } catch(error){
+            throw new Error(`Test failed due to bug: task objects are not received with IDs in natural order`)
+        }
     });
 
     // test HEAD /projects
