@@ -1,0 +1,12 @@
+{
+    "title": "project with category",
+    "completed": false,
+    "active": true,
+    "description": "",
+    "tasks": [],
+    "categories":[
+        {
+            "id": "1"
+        }
+    ] 
+}
