@@ -79,7 +79,7 @@ describe('interperability', () => {
             expect(error.response.status).toBe(404);
             return;
         }
-        fail("Should have returned error code 404");
+        throw new Error("Should have returned error code 404");
 
     });
 
@@ -96,7 +96,7 @@ describe('interperability', () => {
             expect(error.response.status).toBe(404);
             return;
         }
-        fail("Should have returned error code 404");
+        throw new Error("Should have returned error code 404");
 
     });
 
