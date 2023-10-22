@@ -4,7 +4,7 @@
   "description": "",
   "main": "todoAppUnitTest.js",
   "scripts": {
-    "test": "jest --detectOpenHandles --forceExit --randomize"
+    "test": "jest --detectOpenHandles --forceExit --randomize --seed 1720589944"
   },
   "jest": {
     "setupFilesAfterEnv": [
