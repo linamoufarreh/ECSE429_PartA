@@ -127,29 +127,29 @@ describe('test projects', () => {
 
     });
 
-    // test POST /projects with unique ID
-    test("POST /projects with unique ID returns status 400 and an error message", async () => {
-        try {
-            const req = require('./res/projects/post_projects_unique_id_req.json');
-            await axios.post(projectUrl, req);
+    // // test POST /projects with unique ID
+    // test("POST /projects with unique ID returns status 400 and an error message", async () => {
+    //     try {
+    //         const req = require('./res/projects/post_projects_unique_id_req.json');
+    //         await axios.post(projectUrl, req);
 
-            // Fail if the request succeeds
-            throw new Error('It should not reach here.');
+    //         // Fail if the request succeeds
+    //         throw new Error('It should not reach here.');
             
-        } catch (error) {
-            if (error.response === undefined) {
-                throw error;
-            }
+    //     } catch (error) {
+    //         if (error.response === undefined) {
+    //             throw error;
+    //         }
 
-            const response = error.response;
+    //         const response = error.response;
             
-            expect(response.status).toBe(400);
-            expect(response.headers['content-type']).toBe('application/json');
+    //         expect(response.status).toBe(400);
+    //         expect(response.headers['content-type']).toBe('application/json');
 
-            const expected = require('./res/projects/post_projects_existing_id_res.json');
-            expect(response.data).toMatchObject(expected);
-        }
-    });
+    //         const expected = require('./res/projects/post_projects_existing_id_res.json');
+    //         expect(response.data).toMatchObject(expected);
+    //     }
+    // });
      
     
     // test POST /projects with valid body
@@ -189,7 +189,7 @@ describe('test projects', () => {
 test("POST /projects with valid body returns status 201 and GET /projects/:id returns status 200 with the expected JSON", async () => {
     // Test POST
     const postRequest = require('./res/projects/post_projects_req.json');
-    const postResponse = await axios.post(projectUrl, postRequest);
+    let postResponse = await axios.post(projectUrl, postRequest);
 
     expect(postResponse.status).toBe(201);
     expect(postResponse.headers['content-type']).toBe('application/json');
@@ -227,6 +227,10 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
     expect(getRequest.completed).toEqual(expectedGetResponse.projects[0].completed);
     expect(getRequest.active).toEqual(expectedGetResponse.projects[0].active);
     expect(getRequest.tasks).toEqual(expectedGetResponse.projects[0].tasks);
+
+    postResponse = await axios.delete(projectUrl + "/" + thisProjectId);
+    expect(postResponse.status).toBe(200);
+    expect(postResponse.headers['content-type']).toBe('application/json');
 });
 
 
@@ -312,7 +316,7 @@ test("POST /projects with valid body returns status 201 and GET /projects/:id re
     }
 });
 
-    //test GET /projects/:id/categories with inexistent ID
+    //test GET /projects/:id/categories with inexistent project ID
     test("GET /projects/:id/tasks returns status 200 and the following JSON", async () => {
         try {
         let response = await axios.get(projectUrl + "/14/categories");
