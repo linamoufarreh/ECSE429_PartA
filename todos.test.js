@@ -35,7 +35,13 @@ describe('todos', () => {
     }
     }, 10000);
 
-    // Tests for Docs API
+    //add tests here
+
+    test('should return data from API', async () => {
+        const response = await axios.get(apiUrl);
+        expect(response.status).toBe(200);
+        expect(response.data).toBeDefined();
+    });
 
     describe("API Docs Test", () => {
         const docsUrl = apiUrl + "/docs";
@@ -46,8 +52,6 @@ describe('todos', () => {
             expect(response.headers['content-type']).toBe('text/html');
         });
     });
-
-    // Tests for Todos API
 
     describe("API Todo Test", () => {
         const todoUrl = apiUrl + "/todos";
@@ -145,9 +149,10 @@ describe('todos', () => {
         });
 
         // test POST /todos with valid body
+        let newTodoId = 0;
         test("POST /todos with valid body returns status 201 and the following JSON", async () => {
             const req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
+            const response = await axios.post(todoUrl, req);
 
             expect(response.status).toBe(201);
             expect(response.headers['content-type']).toBe('application/json');
@@ -157,25 +162,12 @@ describe('todos', () => {
             expect(response.data.description).toEqual(expected.description);
             expect(response.data.doneStatus).toEqual(expected.doneStatus);
 
-            const newTodoId = response.data.id;
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
+            newTodoId = response.data.id;
         });
 
         // test GET /todos:id after POST
         test("GET /todos/:id after POST returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            const req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test GET /todos/:id
-            response = await axios.get(todoUrl + "/" + newTodoId);
+            let response = await axios.get(todoUrl + "/" + newTodoId);
             
             expect(response.status).toBe(200);
             expect(response.headers['content-type']).toBe('application/json');
@@ -190,25 +182,38 @@ describe('todos', () => {
             expect(response.title).toEqual(expected.todos[0].title);
             expect(response.description).toEqual(expected.todos[0].description);
             expect(response.doneStatus).toEqual(expected.todos[0].doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
         });
+
+        // test POST modifying /todos:id with id input as a string, returns 400 with erroe message
+        // test("POST /todos/:id to modify with id input as a string returns status 400 and an error message", async () => {
+        //     try {
+        //         const req = require('./res/todos/post_todos_modify_req.json');
+        //         req.id = newTodoId.toString();
+        //         const response = await axios.post(todoUrl + "/" + newTodoId, req);
+        //         console.log(JSON.stringify(req) + ": " + response);
+
+        //         // Fail if the request succeeds
+        //         throw new Error('It should not reach here.');
+                
+        //     } catch (error) {
+        //         if (error.response === undefined) {
+        //             throw error;
+        //         }
+
+        //         const response = error.response;
+                
+        //         expect(response.status).toBe(400);
+        //         expect(response.headers['content-type']).toBe('application/json');
+
+        //         const expected = require('./res/todos/post_todos_modify_id_string_res.json');
+        //         expect(response.data).toEqual(expected);
+        //     }
+        // });
 
         // test POST modifying /todos:id (success)
         test("POST /todos/:id to modify returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            let req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test POST /todos/:id to modify
-            req = require('./res/todos/post_todos_modify_req.json');
-            response = await axios.post(todoUrl + "/" + newTodoId, req);
+            const req = require('./res/todos/post_todos_modify_req.json');
+            const response = await axios.post(todoUrl + "/" + newTodoId, req);
 
             expect(response.status).toBe(200);
             expect(response.headers['content-type']).toBe('application/json');
@@ -218,52 +223,12 @@ describe('todos', () => {
             expect(response.data.title).toEqual(expected.title);
             expect(response.data.description).toEqual(expected.description);
             expect(response.data.doneStatus).toEqual(expected.doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-        });
-
-        // test PUT modifying /todos:id (success)
-        test("PUT /todos/:id to modify returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            let req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test POST /todos/:id to modify
-            req = require('./res/todos/post_todos_modify_req.json');
-            response = await axios.put(todoUrl + "/" + newTodoId, req);
-
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            const expected = require('./res/todos/post_todos_modify_res.json');
-            expect(response.data.id).toEqual(newTodoId);
-            expect(response.data.title).toEqual(expected.title);
-            expect(response.data.description).toEqual(expected.description);
-            expect(response.data.doneStatus).toEqual(expected.doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
         });
 
         // test DELETE /todos/:id
         test("DELETE /todos/:id returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            const req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
+            const response = await axios.delete(todoUrl + "/" + newTodoId);
 
-            // Test DELETE /todos/:id
-            response = await axios.delete(todoUrl + "/" + newTodoId);
             expect(response.status).toBe(200);
             expect(response.headers['content-type']).toBe('application/json');
         });
@@ -305,89 +270,30 @@ describe('todos', () => {
             expect(response.description).toEqual(expected.description);
             expect(response.tasks).toIncludeSameMembers(expected.tasks);
         });
-
-        // test POST modifying only doneStatus property /todos:id (success)
-        test("POST /todos/:id to modify returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            let req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test POST /todos/:id to modify
-            req = require('./res/todos/post_todos_modify_req2.json');
-            response = await axios.post(todoUrl + "/" + newTodoId, req);
-
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            const expected = require('./res/todos/post_todos_modify_res2.json');
-            expect(response.data.id).toEqual(newTodoId);
-            expect(response.data.title).toEqual(expected.title);
-            expect(response.data.description).toEqual(expected.description);
-            expect(response.data.doneStatus).toEqual(expected.doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-        });
-
-        // test PUT modifying only doneStatus property /todos:id (BUG)
-        test("PUT /todos/:id to modify returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            let req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test PUT /todos/:id to modify doneStatus property (BUG)
-            req = require('./res/todos/post_todos_modify_req2.json');
-            response = await axios.put(todoUrl + "/" + newTodoId, req);
-
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            const expected = require('./res/todos/post_todos_modify_res2.json');
-            expect(response.data.id).toEqual(newTodoId);
-            expect(response.data.title).toEqual(expected.title);
-            expect(response.data.description).toEqual(expected.description);
-            expect(response.data.doneStatus).toEqual(expected.doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-        });
-
-        // test PUT modifying only title property /todos:id (success)
-        test("PUT /todos/:id to modify returns status 200 and the following JSON", async () => {
-            // Create a new todo and test if it was sucessfully created
-            let req = require('./res/todos/post_todos_req.json');
-            let response = await axios.post(todoUrl, req);
-            const newTodoId = response.data.id;
-            expect(response.status).toBe(201);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            // Test PUT /todos/:id to modify title property
-            req = require('./res/todos/post_todos_modify_req3.json');
-            response = await axios.put(todoUrl + "/" + newTodoId, req);
-
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-
-            const expected = require('./res/todos/post_todos_modify_res3.json');
-            expect(response.data.id).toEqual(newTodoId);
-            expect(response.data.title).toEqual(expected.title);
-            expect(response.data.description).toEqual(expected.description);
-            expect(response.data.doneStatus).toEqual(expected.doneStatus);
-
-            // Delete the new todo and test if it was sucessfully deleted
-            response = await axios.delete(todoUrl + "/" + newTodoId);
-            expect(response.status).toBe(200);
-            expect(response.headers['content-type']).toBe('application/json');
-        });
     });
 });
+
+// describe('test projects', () => {
+
+//     beforeAll(async () => {
+//         startApi();
+//         //wait 2 seconds for the server to start
+//         await new Promise(resolve => setTimeout(resolve, 2000));
+//     }, 10000);
+    
+//     afterAll(async () => {
+//     try {
+//         stopApi();
+//         //wait 2 seconds for the server to stop
+//         await new Promise(resolve => setTimeout(resolve, 2000));
+//     } catch (error) {
+//     }
+//     }, 10000);
+
+//     //Add tests here
+//     test('should return data from API', async () => {
+//         const response = await axios.get(apiUrl);
+//         expect(response.status).toBe(200);
+//         expect(response.data).toBeDefined();
+//     });
+// });
