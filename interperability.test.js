@@ -54,17 +54,24 @@ describe('interperability', () => {
 
         const response = await axios.post(apiUrl + "/todos/1/categories", body);
         expect(response.status).toBe(201);
+        await axios.delete(apiUrl + "/todos/1/categories/2");
 
     });
 
     test('should delete relationship between category with id 2 and todo with id 1', async () => {
+
+        const body = 
+        {
+            "id": "2"
+        }
+        await axios.post(apiUrl + "/todos/1/categories", body);
 
         const response = await axios.delete(apiUrl + "/todos/1/categories/2");
         expect(response.status).toBe(200);
 
     });
 
-    test('should not be able to delete nonexistant relationship between category with id 2 and todo with id 1', async () => {
+    test('should return error when attempting to delete nonexistant relationship between category with id 2 and todo with id 1', async () => {
 
         try{
             const response = await axios.delete(apiUrl + "/todos/1/categories/2");
@@ -90,6 +97,15 @@ describe('interperability', () => {
             return;
         }
         fail("Should have returned error code 404");
+
+    });
+
+    test('[BUG] should return error code 200 when we get relationship between todo with unexistant id and all categories', async () => {
+        const response = await axios.get(apiUrl + "/todos/3433/categories");
+        const expected = require('./res/interoperability/categoryTodo.json')
+
+        expect(response.status).toBe(200);
+        expect(response.data).toBeDefined();
 
     });
 
