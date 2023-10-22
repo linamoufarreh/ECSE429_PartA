@@ -26,7 +26,7 @@ afterAll(async () => {
     await new Promise(resolve => setTimeout(resolve, 2000));  
 });
 
-describe('interperability', () => {
+describe('interoperability', () => {
 
     //Add tests here
     test('should return data from API', async () => {
@@ -149,6 +149,10 @@ describe('interperability', () => {
             expect(error.response.status).toBe(400);
             return;
         }
+    });
+
+    test("can generate XML payload", async () => {
+        
     });
 
 
