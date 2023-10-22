@@ -162,12 +162,11 @@ describe('test projects', () => {
     });
      
     
-    let newProjectId = 0;
     // test POST /projects with valid body
     
     test("POST /projects with valid body returns status 201 and the following JSON", async () => {
         const req = require('./res/projects/post_projects_req.json');
-        const response = await axios.post(projectUrl, req);
+        let response = await axios.post(projectUrl, req);
 
         expect(response.status).toBe(201);
         expect(response.headers['content-type']).toBe('application/json');
@@ -185,38 +184,74 @@ describe('test projects', () => {
         expect(response.data.active).toEqual(expected.active);
         expect(response.data.description).toEqual(expected.description);
         
-        newProjectId = response.data.id;
-    });
+        const newProjectId = response.data.id;
 
-
-    // test GET /projects:id after POST
-    test("GET /projects/:id after POST returns status 200 and the following JSON", async () => {
-
-        response = await axios.get(projectUrl + "/" + newProjectId);
-        
+        // Delete the new todo and test if it was sucessfully deleted
+        response = await axios.delete(projectUrl + "/" + newProjectId);
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
-
-        const expected = require('./res/projects/get_projects_id.json');
-
-        response = response.data.projects;
-        expect(response.length).toBe(1);
-
-        response = response[0];
-        expect(response.id).toEqual(newProjectId);
-        expect(response.title).toEqual(expected.projects[0].title);
-        expect(response.description).toEqual(expected.projects[0].description);
-        expect(response.completed).toEqual(expected.projects[0].completed);
-        expect(response.active).toEqual(expected.projects[0].active);
-        expect(response.tasks).toEqual(expected.projects[0].tasks);
-
     });
+
+
+
+
+// Test POST /projects with valid body and then GET /projects/:id after POST
+test("POST /projects with valid body returns status 201 and GET /projects/:id returns status 200 with the expected JSON", async () => {
+    // Test POST
+    const postRequest = require('./res/projects/post_projects_req.json');
+    const postResponse = await axios.post(projectUrl, postRequest);
+
+    expect(postResponse.status).toBe(201);
+    expect(postResponse.headers['content-type']).toBe('application/json');
+
+    const expectedPostResponse = {
+        title: "project X",
+        completed: "false",
+        active: "true",
+        description: "",
+        tasks: []
+    };
+
+    expect(postResponse.data.title).toEqual(expectedPostResponse.title);
+    expect(postResponse.data.completed).toEqual(expectedPostResponse.completed);
+    expect(postResponse.data.active).toEqual(expectedPostResponse.active);
+    expect(postResponse.data.description).toEqual(expectedPostResponse.description);
+
+    const thisProjectId = postResponse.data.id;
+
+    // Test GET
+    let getRequest = await axios.get(projectUrl + "/" + thisProjectId);
+
+    expect(getRequest.status).toBe(200);
+    expect(getRequest.headers['content-type']).toBe('application/json');
+
+    const expectedGetResponse = require('./res/projects/get_projects_id.json');
+
+    getRequest = getRequest.data.projects;
+    expect(getRequest.length).toBe(1);
+
+    getRequest = getRequest[0];
+    expect(getRequest.id).toEqual(thisProjectId);
+    expect(getRequest.title).toEqual(expectedGetResponse.projects[0].title);
+    expect(getRequest.description).toEqual(expectedGetResponse.projects[0].description);
+    expect(getRequest.completed).toEqual(expectedGetResponse.projects[0].completed);
+    expect(getRequest.active).toEqual(expectedGetResponse.projects[0].active);
+    expect(getRequest.tasks).toEqual(expectedGetResponse.projects[0].tasks);
+});
+
 
      // test POST modifying /projects:id (success)
     test("POST /projects/:id to modify returns status 200 and the following JSON", async () => {
-        const req = require('./res/projects/post_projects_modify_req.json');
-        const response = await axios.post(projectUrl + "/" + newProjectId, req);
+        let req = require('./res/projects/post_projects_req.json');
 
+        let response = await axios.post(projectUrl, req);
+        const newProjectId= response.data.id;
+
+        expect(response.status).toBe(201);
+        expect(response.headers['content-type']).toBe('application/json');
+
+        req = require('./res/projects/post_projects_modify_req.json');
+        response = await axios.post(projectUrl + "/" + newProjectId, req);
         expect(response.status).toBe(200);
         expect(response.headers['content-type']).toBe('application/json');
 
@@ -228,36 +263,25 @@ describe('test projects', () => {
         expect(response.data.active).toEqual(expected.active);
         expect(response.data.tasks).toEqual(expected.tasks);
 
+         // Delete the new project and test if it was sucessfully deleted
+         response = await axios.delete(projectUrl + "/" + newProjectId);
+         expect(response.status).toBe(200);
+         expect(response.headers['content-type']).toBe('application/json');
     });
 
-    // test DELETE /projects/:id
+    //test DELETE/projects/:id
     test("DELETE /projects/:id returns status 200 and the following JSON", async () => {
-        const response = await axios.delete(projectUrl + "/" + newProjectId);
-
-        expect(response.status).toBe(200);
-        expect(response.headers['content-type']).toBe('application/json');
-    });
-
-
-     // test GET /projects:id after DELETE
-     test("GET /projects/:id after DELETE returns status 200 and the following JSON", async () => {
-        try{
-
-        
-        let response = await axios.get(projectUrl + "/" + newProjectId);
-        
-        expect(response.status).toBe(200);
+        // Create a new project and test if it was sucessfully created
+        const req = require('./res/projects/post_projects_req.json');
+        let response = await axios.post(projectUrl, req);
+        const newProjectId = response.data.id;
+        expect(response.status).toBe(201);
         expect(response.headers['content-type']).toBe('application/json');
 
-        response = response.data.projects;
-        expect(response.length).toBe(0);
-
-        response = response[0];
-        expect(response.data).toBeNull();
-
-    } catch(error){
-        throw new Error(`Test failed due to bug: project was not deleted`)
-    }
+        // Test DELETE /todos/:id
+        response = await axios.delete(projectUrl + "/" + newProjectId);
+        expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toBe('application/json');
     });
 
     // test GET /projects/:id/tasks
