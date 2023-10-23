@@ -26,7 +26,7 @@ afterAll(async () => {
     await new Promise(resolve => setTimeout(resolve, 2000));  
 });
 
-describe('interperability', () => {
+describe('interoperability', () => {
 
     //Add tests here
     test('should return data from API', async () => {
@@ -100,7 +100,7 @@ describe('interperability', () => {
 
     });
 
-    test('[BUG] should return error code 200 when we get relationship between todo with unexistant id and all categories', async () => {
+    test('[BUG behavior] should return error code 200 when we get relationship between todo with unexistant id and all categories', async () => {
         const response = await axios.get(apiUrl + "/todos/3433/categories");
         const expected = require('./res/interoperability/categoryTodo.json')
 
@@ -149,6 +149,10 @@ describe('interperability', () => {
             expect(error.response.status).toBe(400);
             return;
         }
+    });
+
+    test("can generate XML payload", async () => {
+
     });
 
 
