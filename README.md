@@ -1,6 +1,8 @@
 # ECSE429_PartA
 
 Run tests by first calling "npm install" then "npm test"
+
+
 Written Report:
 https://docs.google.com/document/d/1OkpahBhuXRNjYeRRbY61wVqjs0nYHGOVTpSBRriO1Q4/edit?usp=sharing
 
