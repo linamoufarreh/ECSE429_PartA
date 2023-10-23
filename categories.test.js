@@ -9,7 +9,6 @@ const apiUrl = "http://localhost:4567";
 function startApi() {
     exec('java -jar runTodoManagerRestAPI-1.5.5.jar');
 }
-
 async function stopApi() {
     try{
         const response = await axios.get(apiUrl + "/shutdown");
@@ -66,18 +65,32 @@ describe('test categories', () => {
         expect(response).toIncludeSameMembers(expected);
     });
 
-    // test GET /projects/:id/todos with inexistent ID
-    test("GET /categories/:id/todo [BUG] returns status 200 and the following JSON", async () => {
+    // test GET /categories/:id/todos with inexistent ID
+    test(" [BUG] GET /categories/:id/todo with inexisiting ID returns status 404", async () => {
         try {
         let response = await axios.get(categoryUrl + "/30/todos");
-        expect(response.status).toBe(200);
+        expect(response.status).toBe(404);
         expect(response.headers['content-type']).toBe('application/json');
         response = response.data.tasks;
-        expect(response).toBeNull();
+        expect(response).toBeUndefined();
     } catch (error) {
-        throw new Error(`Test failed due to bug: todo objects are still received while category inexistent`)
+        throw error
     }
 });
+
+test(" [BUG BEHAVIOUR] GET /categories/:id/todo returns status 200 and the following JSON", async () => {
+    try {
+    let response = await axios.get(categoryUrl + "/30/todos");
+    expect(response.status).toBe(200);
+    expect(response.headers['content-type']).toBe('application/json');
+    response = response.data.tasks;
+    expect(response).toBeUndefined();
+} catch (error) {
+    throw error
+}
+});
+
+
 
 // test POST /categories with existing ID
     test("POST /categories with existing ID returns status 400 and an error message", async () => {
@@ -93,17 +106,13 @@ describe('test categories', () => {
             const response = error.response;
             expect(response.status).toBe(400);
             expect(response.headers['content-type']).toBe('application/json');
-
             const expected = require('./res/categories/post_categories_existing_id_res.json');
             expect(response.data).toMatchObject(expected);
         }
     });
-
     // test POST /categories with valid body
     test("POST /category with valid body returns status 201 and the following JSON", async () => {
-
         idToDelete = "";
-
         try{
             const req = require('./res/categories/post_category_req.json');
             const response = await axios.post(categoryUrl, req);
@@ -124,7 +133,6 @@ describe('test categories', () => {
         }
 
     });
-
     // test DELETE /categories/:id
     test("DELETE /todos/:id returns status 200 and the following JSON", async () => {
 
