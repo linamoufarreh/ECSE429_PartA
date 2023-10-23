@@ -40,8 +40,17 @@ describe('interoperability', () => {
         const expected = require('./res/interoperability/categoryTodo.json')
 
         expect(response.status).toBe(200);
+        expect(response.headers['content-type']).toBe('application/json');
         expect(response.data).toBeDefined();
         expect(response.data).toEqual(expected);
+
+    });
+
+    test('can get payload in json', async () => {
+        const response = await axios.get(apiUrl + "/todos/1/categories");
+
+        expect(response.headers['content-type']).toBe('application/json');
+        expect(response.data).toBeDefined();
 
     });
 

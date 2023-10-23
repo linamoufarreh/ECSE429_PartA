@@ -51,6 +51,11 @@ describe('test projects', () => {
     
         expect(response).toEqual(expected);
     });
+
+    test("can get payload in json", async () => {
+        let response = await axios.get(projectUrl);
+        expect(response.headers['content-type']).toBe('application/json');
+    });
   
     
 

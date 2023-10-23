@@ -67,6 +67,11 @@ describe('todos', () => {
             expect(response).toIncludeSameMembers(expected);
         });
 
+        test("can get payload in json", async () => {
+            let response = await axios.get(todoUrl);
+            expect(response.headers['content-type']).toBe('application/json');
+        });
+
         // test GET /todos?title=scan paperwork
         test("GET /todos?title=scan paperwork returns status 200 and the following JSON", async () => {
             const response = await axios.get(todoUrl + "?title=scan paperwork");

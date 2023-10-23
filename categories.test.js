@@ -45,6 +45,11 @@ describe('test categories', () => {
         expect(response.data).toMatchObject(expected);
     });
 
+    test("can get payload in json", async () => {
+        const response = await axios.get(categoryUrl + "?title=Home");
+        expect(response.headers['content-type']).toBe('application/json');
+    });
+
     // test HEAD /categories
     test("HEAD /categories returns status 200 and no body", async () => {
         const response = await axios.head(categoryUrl);
