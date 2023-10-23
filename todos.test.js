@@ -372,6 +372,43 @@ describe('todos', () => {
             }
         });
 
+        // test PUT modifying only doneStatus property /todos:id (BUG)
+        test("[BUG Behavior] PUT /todos/:id to not set doneStatus to true returns status 400", async () => {
+            // Create a new todo and test if it was sucessfully created
+            let req = require('./res/todos/post_todos_req.json');
+            let response = await axios.post(todoUrl, req);
+            const newTodoId = response.data.id;
+            expect(response.status).toBe(201);
+            expect(response.headers['content-type']).toBe('application/json');
+
+            // Test PUT /todos/:id to modify doneStatus property (BUG)
+            req = require('./res/todos/post_todos_modify_req2.json');
+
+            try {
+                response = await axios.put(todoUrl + "/" + newTodoId, req);
+
+                expect(response.status).toBe(200);
+                expect(response.headers['content-type']).toBe('application/json');
+
+                const expected = require('./res/todos/post_todos_modify_res2.json');
+                expect(response.data.id).toEqual(newTodoId);
+                expect(response.data.title).toEqual(expected.title);
+                expect(response.data.description).toEqual(expected.description);
+                expect(response.data.doneStatus).toEqual(expected.doneStatus);
+
+                // Delete the new todo and test if it was sucessfully deleted
+                response = await axios.delete(todoUrl + "/" + newTodoId);
+                expect(response.status).toBe(200);
+                expect(response.headers['content-type']).toBe('application/json');
+            } catch (error) {
+                expect(error.response.status).toBe(400);
+
+                // Delete the new todo and test if it was sucessfully deleted
+                response = await axios.delete(todoUrl + "/" + newTodoId);
+                expect(response.status).toBe(200);
+            }
+        });
+
         // test PUT modifying only title property /todos:id (success)
         test("PUT /todos/:id to modify title returns status 200 and the following JSON", async () => {
             // Create a new todo and test if it was sucessfully created

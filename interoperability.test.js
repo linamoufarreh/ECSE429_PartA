@@ -100,7 +100,7 @@ describe('interoperability', () => {
 
     });
 
-    test('[BUG] should return error code 200 when we get relationship between todo with unexistant id and all categories', async () => {
+    test('[BUG behavior] should return error code 200 when we get relationship between todo with unexistant id and all categories', async () => {
         const response = await axios.get(apiUrl + "/todos/3433/categories");
         const expected = require('./res/interoperability/categoryTodo.json')
 
@@ -152,7 +152,7 @@ describe('interoperability', () => {
     });
 
     test("can generate XML payload", async () => {
-        
+
     });
 
 
